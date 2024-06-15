@@ -1,4 +1,6 @@
-import json, os
+import json
+import os
+
 
 def read_credentials_from_json(filename):
     if os.path.exists(filename):
@@ -12,6 +14,8 @@ def read_credentials_from_json(filename):
     return data
 
 # Function to write credentials to JSON file
+
+
 def write_credentials_to_json(filename, credentials):
     with open(filename, 'w') as json_file:
         json.dump(credentials, json_file, indent=4)

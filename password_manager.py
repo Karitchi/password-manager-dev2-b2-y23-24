@@ -4,19 +4,20 @@ from utils import json
 
 class PasswordManager:
     def __init__(self, args):
-        self.stored_credentials = json.read_credentials_from_json(CREDENTIALS_FILE)
+        self.stored_credentials = json.read_credentials_from_json(
+            CREDENTIALS_FILE)
         self.args = args
 
     def run(self):
         if self.args.command == 'add':
             self.create_credentials(self.args, self.stored_credentials)
-            
+
         elif self.args.command == 'get':
             self.fetch_credentials(self.args.service, self.stored_credentials)
-            
+
         elif self.args.command == 'delete':
             self.remove_credential(self.args.service, self.stored_credentials)
-            
+
         elif self.args.command == 'list':
             self.list_credentials(self.stored_credentials)
 
@@ -29,11 +30,11 @@ class PasswordManager:
             "password": args.password
         }
 
-    
         if args.service in credentials:
             for credential in credentials[args.service]:
                 if credential['username'] == args.username:
-                    print(f"Credentials for {args.username} already exist at {args.service}.")
+                    print(
+                        f"Credentials for {args.username} already exist at {args.service}.")
                     return
 
             credentials[args.service].append(new_credentials)
@@ -42,7 +43,8 @@ class PasswordManager:
 
         # Write updated credentials back to file
         json.write_credentials_to_json(CREDENTIALS_FILE, credentials)
-        print(f"Added credentials for {args.username} at {args.service} successfully.")
+        print(
+            f"Added credentials for {args.username} at {args.service} successfully.")
 
     def fetch_credentials(self, service, credentials):
         # Read existing credentials from file
@@ -50,7 +52,8 @@ class PasswordManager:
         if service in credentials:
             print(f"The credentials for service '{service}' are:")
             for credential in credentials[service]:
-                print(f"\nPassword: {credential['password']}\nUsername: {credential['username']}")
+                print(
+                    f"\nPassword: {credential['password']}\nUsername: {credential['username']}")
 
         else:
             print(f"No credentials found for service '{service}'")
@@ -72,8 +75,9 @@ class PasswordManager:
             return
 
         print("Your credentials are:")
-        
+
         for service in credentials:
             print(f"\nService: {service}\n")
             for credential in credentials[service]:
-                print(f"    Username: {credential['username']}\n    Password: {credential['password']}\n")
+                print(
+                    f"    Username: {credential['username']}\n    Password: {credential['password']}\n")
