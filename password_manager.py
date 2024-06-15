@@ -1,10 +1,10 @@
 from config import CREDENTIALS_FILE
-from utils import json, credentials, parse_args
+from utils import json
 
 
 class PasswordManager:
     def __init__(self, args):
-        self.stored_credentials = credentials.load(CREDENTIALS_FILE)
+        self.stored_credentials = json.read_credentials_from_json(CREDENTIALS_FILE)
         self.args = args
 
     def run(self):
