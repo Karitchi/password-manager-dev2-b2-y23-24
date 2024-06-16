@@ -21,11 +21,6 @@ This CLI Password Manager is a Python-based tool to manage your credentials. It 
    cd password-manager
    ```
 
-2. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ## Usage
 
 ### Command Line Arguments
