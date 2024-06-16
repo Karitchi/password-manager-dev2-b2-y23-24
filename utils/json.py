@@ -4,7 +4,7 @@ import os
 
 def read_credentials_from_json(filename):
     if os.path.exists(filename):
-        with open(filename, 'r') as json_file:
+        with open(filename, 'r', encoding="utf-8") as json_file:
             try:
                 data = json.load(json_file)
             except json.JSONDecodeError:
@@ -17,5 +17,5 @@ def read_credentials_from_json(filename):
 
 
 def write_credentials_to_json(filename, credentials):
-    with open(filename, 'w') as json_file:
+    with open(filename, 'w', encoding="utf-8") as json_file:
         json.dump(credentials, json_file, indent=4)

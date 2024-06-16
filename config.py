@@ -1,1 +1,1 @@
-CREDENTIALS_FILE = 'passwords.json'
+CREDENTIALS_FILE = 'credentials.json'
