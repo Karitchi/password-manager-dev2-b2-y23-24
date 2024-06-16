@@ -1,7 +1,7 @@
 import argparse
 
 
-def parse_args():
+def get_arguments():
     parser = argparse.ArgumentParser(description="CLI Password Manager")
     subparsers = parser.add_subparsers(
         dest='command', help='Available commands')

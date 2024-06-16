@@ -5,88 +5,88 @@ import getpass
 
 class PasswordManager:
     def __init__(self, args):
-        self.stored_credentials = json.read_credentials_from_json(
-            CREDENTIALS_FILE)
+        self.credentials = json.read_credentials_from_json(CREDENTIALS_FILE)
         self.args = args
 
     def run(self):
-        if self.args.command == 'add':
-            self.add_credentials(self.args, self.stored_credentials)
-
-        elif self.args.command == 'get':
-            self.get_credentials(self.args.service, self.stored_credentials)
-
-        elif self.args.command == 'delete':
-            self.delete_credential(self.args.service, self.stored_credentials)
-
-        elif self.args.command == 'list':
-            self.list_credentials(self.stored_credentials)
-
-        elif self.args.command == 'interactive':
-            self.interactive(self.stored_credentials)
-
-    def add_credentials(self, args, credentials):
-        # Read existing credentials from file
-
-        # Add new credentials
-        new_credentials = {
-            "username": args.username,
-            "password": args.password
+        commands = {
+            'add': self.add_credentials,
+            'get': self.get_credentials,
+            'delete': self.delete_credential,
+            'list': self.list_credentials,
+            'interactive': self.interactive_mode
         }
 
-        if args.service in credentials:
-            for credential in credentials[args.service]:
-                if credential['username'] == args.username:
-                    print(
-                        f"Credentials for {args.username} already exist at {args.service}.")
-                    return
-
-            credentials[args.service].append(new_credentials)
+        command = self.args.command
+        if command in commands:
+            commands[command]()
         else:
-            credentials[args.service] = [new_credentials]
+            print(f"Unknown command: {command}")
 
-        # Write updated credentials back to file
-        json.write_credentials_to_json(CREDENTIALS_FILE, credentials)
-        print(
-            f"Added credentials for {args.username} at {args.service} successfully.")
+    def add_credentials(self):
+        service = self.args.service
+        username = self.args.username
+        password = self.args.password
 
-    def get_credentials(self, service, credentials):
-        # Read existing credentials from file
+        if not service or not username or not password:
+            print("Service, username, and password are required to add credentials.")
+            return
 
-        if service in credentials:
+        if service in self.credentials:
+            for credential in self.credentials[service]:
+                if credential['username'] == username:
+                    print(
+                        f"Credentials for {username} already exist at {service}.")
+                    return
+            self.credentials[service].append(
+                {"username": username, "password": password})
+        else:
+            self.credentials[service] = [
+                {"username": username, "password": password}]
+
+        json.write_credentials_to_json(CREDENTIALS_FILE, self.credentials)
+        print(f"Added credentials for {username} at {service} successfully.")
+
+    def get_credentials(self):
+        service = self.args.service
+        if not service:
+            print("Service name is required to get credentials.")
+            return
+
+        if service in self.credentials:
             print(f"The credentials for service '{service}' are:\n")
-            for credential in credentials[service]:
+            for credential in self.credentials[service]:
                 print(
                     f"    Username: {credential['username']}\n    Password: {credential['password']}\n")
-
         else:
             print(f"No credentials found for service '{service}'")
 
-    def delete_credential(self, service, credentials):
-        # Read existing credentials from file
+    def delete_credential(self):
+        service = self.args.service
+        if not service:
+            print("Service name is required to delete credentials.")
+            return
 
-        if service in credentials:
-            credentials.pop(service)
-            json.write_credentials_to_json(CREDENTIALS_FILE, credentials)
+        if service in self.credentials:
+            self.credentials.pop(service)
+            json.write_credentials_to_json(CREDENTIALS_FILE, self.credentials)
             print(f"Deleted credentials for service '{service}' successfully.")
         else:
             print(f"No credentials found for service '{service}'")
 
-    def list_credentials(self, credentials):
-
-        if not credentials:
+    def list_credentials(self):
+        if not self.credentials:
             print("No credentials found.")
             return
 
         print("Your credentials are:")
-
-        for service in credentials:
+        for service, creds in self.credentials.items():
             print(f"\nService: {service}\n")
-            for credential in credentials[service]:
+            for credential in creds:
                 print(
                     f"    Username: {credential['username']}\n    Password: {credential['password']}\n")
 
-    def interactive(self, credentials):
+    def interactive_mode(self):
         print("Welcome to the interactive mode of the password manager.")
         print("Enter 'exit' to quit the program.")
         while True:
@@ -96,27 +96,25 @@ class PasswordManager:
             if command == 'exit':
                 break
 
-            elif command == 'add':
-
-                self.args.service = input("Enter the service name: ")
-                self.args.username = input("Enter the username: ")
-                self.args.password = getpass.getpass(
-                    prompt="Enter the password: ")
-
-                self.add_credentials(self.args, credentials)
-
-            elif command == 'get':
-                self.args.service = input("Enter the service name: ")
-
-                self.get_credentials(self.args.service, credentials)
-
-            elif command == 'delete':
-                self.args.service = input("Enter the service name: ")
-
-                self.delete_credential(self.args.service, credentials)
-
-            elif command == 'list':
-                self.list_credentials(credentials)
-
-            else:
+            if command not in ['add', 'get', 'delete', 'list']:
                 print("Invalid command. Please try again.")
+                continue
+
+            if command == 'add':
+                service = input("Enter the service name: ").strip()
+                username = input("Enter the username: ").strip()
+                password = getpass.getpass("Enter the password: ")
+                self.args.service = service
+                self.args.username = username
+                self.args.password = password
+                self.add_credentials()
+            elif command == 'get':
+                service = input("Enter the service name: ").strip()
+                self.args.service = service
+                self.get_credentials()
+            elif command == 'delete':
+                service = input("Enter the service name: ").strip()
+                self.args.service = service
+                self.delete_credential()
+            else:
+                self.list_credentials()

@@ -1,9 +1,9 @@
-from utils.parse_args import parse_args
+from utils.parse_args import get_arguments
 from password_manager import PasswordManager
 
 
 def main():
-    args = parse_args()
+    args = get_arguments()
     password_manager = PasswordManager(args)
     password_manager.run()
 
